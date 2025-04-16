@@ -11,8 +11,8 @@ const ROOMS_MAX = 4;
 const PERSON_MIN = 1;
 const PERSON_MAX = 4;
 
-const RENT_MIN = 5.00;
-const RENT_MAX = 50.00;
+const RENT_MIN = 100.00;
+const RENT_MAX = 100_000.00;
 
 export class TSVOfferGenerator implements OfferGenerator {
   constructor(
