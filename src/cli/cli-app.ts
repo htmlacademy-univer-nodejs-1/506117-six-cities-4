@@ -1,19 +1,12 @@
-import { inject, injectable } from 'inversify';
 import { CommandParser } from './command-parser.js';
 import { Command } from './command/command.interface.js';
-import { Component } from '../shared/types/component.enum.js';
-import { Logger } from '../shared/libs/logger/logger.interface.js';
 
 type CommandsRecord = Record<string, Command>;
 
-@injectable()
 export class CLIApp {
   private commands: CommandsRecord = {};
 
-  constructor(
-    @inject(Component.Logger) private readonly logger: Logger,
-    public readonly defaultCommand: string = '--help'
-  ) {}
+  constructor(public readonly defaultCommand: string = '--help') {}
 
   public registerCommands(commandsArr: Command[]): void {
     commandsArr.forEach((command) => {
@@ -22,8 +15,6 @@ export class CLIApp {
       }
       this.commands[command.getName()] = command;
     });
-
-    this.logger.info(`Registered commands: ${this.commands}`);
   }
 
   public getDefaultCommand(): Command {
@@ -44,8 +35,6 @@ export class CLIApp {
     const command = this.getCommand(commandName);
     const commandParams = commandData[commandName];
 
-    this.logger.info(`Start executing command: ${commandName} with params: ${commandParams}`);
     command.execute(...commandParams);
-    this.logger.info(`${commandName} executed successfully`);
   }
 }
