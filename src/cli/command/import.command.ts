@@ -1,24 +1,29 @@
-import { inject, injectable } from 'inversify';
 import { createOffer, getErrorMessage } from '../../shared/helpers/index.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/index.js';
-import { OfferService } from '../../shared/modules/offer/index.js';
-import { UserService } from '../../shared/modules/user/index.js';
+import { DefaultOfferService, OfferModel, OfferService } from '../../shared/modules/offer/index.js';
+import { DefaultUserService, UserModel, UserService } from '../../shared/modules/user/index.js';
 import { Command } from './command.interface.js';
-import { Component } from '../../shared/types/component.enum.js';
-import { Logger } from '../../shared/libs/logger/index.js';
+import { ConsoleLogger, Logger } from '../../shared/libs/logger/index.js';
 import { DatabaseClient } from '../../shared/database-client/database-client.interface.js';
-import { Config } from 'convict';
-import { RestSchema } from '../../shared/libs/config/rest.schema.js';
+import { MongoDatabaseClient } from '../../shared/database-client/mongo.database-client.js';
+import { Offer } from '../../shared/types/index.js';
 
-@injectable()
 export class ImportCommand implements Command {
-  constructor(
-    @inject(Component.Logger) private readonly logger: Logger,
-    @inject(Component.DatabaseClient) private readonly databaseClient: DatabaseClient,
-    @inject(Component.Config) private readonly config: Config<RestSchema>,
-    @inject(Component.UserService) private readonly userService: UserService,
-    @inject(Component.OfferService) private readonly offerService: OfferService
-  ) { }
+  private readonly logger: Logger;
+  private readonly databaseClient: DatabaseClient;
+  private readonly userService: UserService;
+  private readonly offerService: OfferService;
+  private salt: string;
+
+  constructor() {
+    this.onLineRead = this.onLineRead.bind(this);
+    this.onCompleteReading = this.onCompleteReading.bind(this);
+
+    this.logger = new ConsoleLogger();
+    this.databaseClient = new MongoDatabaseClient(this.logger);
+    this.userService = new DefaultUserService(this.logger, UserModel);
+    this.offerService = new DefaultOfferService(this.logger, OfferModel);
+  }
 
   public getName(): string {
     return '--import';
@@ -28,22 +33,32 @@ export class ImportCommand implements Command {
     const offer = createOffer(line);
     this.logger.info(`posting offer ${offer.title}`);
 
-    const salt = this.config.get('SALT');
     this.userService.create(
       {
         ...offer.author,
-        password: 'passwd1'
+        password: 'passwd1',
       },
-      salt
+      this.salt
     );
 
-    this.offerService.create(offer, salt);
+    this.offerService.create(offer, this.salt);
 
     this.logger.info(`post offer ${offer.title} success`);
   }
 
   private onCompleteReading(count: number) {
     console.info(`${count} rows imported`);
+  }
+
+  private async saveOffer(offer: Offer) {
+    const user = await this.userService.findOrCreate({
+      ...offer.author,
+      password: 'passwd1'
+    }, this.salt);
+
+    await this.offerService.create({
+      
+    });
   }
 
   private async _initDB(connectionString: string) {
@@ -53,13 +68,14 @@ export class ImportCommand implements Command {
   }
 
   public async execute(...params: string[]): Promise<void> {
-    const [filePath, connectionString] = params;
+    const [filePath, connectionString, salt] = params;
+    this.salt = salt;
 
     await this._initDB(connectionString);
     const fileReader = new TSVFileReader(filePath.trim());
 
-    fileReader.on('line', this.onLineRead.bind(this));
-    fileReader.on('end', this.onCompleteReading.bind(this));
+    fileReader.on('line', this.onLineRead);
+    fileReader.on('end', this.onCompleteReading);
 
     try {
       await fileReader.read();

@@ -1,9 +1,8 @@
-import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
-import { Offer } from '../../types/offer.type.js';
+import { defaultClasses, getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose';
 import { Coords } from '../../types/coords.type.js';
 import { FacilitiesType } from '../../types/facilities-type.enum.js';
 import { OfferType } from '../../types/offer-type.enum.js';
-import { User } from '../../types/user.type.js';
+import { UserEntity } from '../user/user.entity.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {}
@@ -14,7 +13,7 @@ export interface OfferEntity extends defaultClasses.Base {}
   }
 })
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
+export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({
     required: true,
     minlength: 10,
@@ -65,6 +64,8 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
   public rate: number;
 
   @prop({
+    type: () => String,
+    enum: OfferType,
     required: true
   })
   public type: OfferType;
@@ -91,14 +92,17 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
   public rent: number;
 
   @prop({
+    type: () => String,
+    enum: FacilitiesType,
     required: true
   })
   public facilities: FacilitiesType[];
 
   @prop({
+    ref: UserEntity,
     required: true
   })
-  public author: User;
+  public authorId: Ref<UserEntity>;
 
   @prop({
     required: false
@@ -109,28 +113,6 @@ export class OfferEntity extends defaultClasses.TimeStamps implements Offer {
     required: true
   })
   public coords: Coords;
-
-  constructor(offer: Offer) {
-    super();
-
-    this.title = offer.title;
-    this.description = offer.description;
-    this.date = offer.date;
-    this.city = offer.city;
-    this.preview = offer.preview;
-    this.photos = offer.photos;
-    this.isPremium = offer.isPremium;
-    this.isFavourite = offer.isFavourite;
-    this.rate = offer.rate;
-    this.type = offer.type;
-    this.roomsNum = offer.roomsNum;
-    this.personNum = offer.personNum;
-    this.rent = offer.rent;
-    this.facilities = offer.facilities;
-    this.author = offer.author;
-    this.commentsNum = offer.commentsNum;
-    this.coords = offer.coords;
-  }
 }
 
 export const OfferModel = getModelForClass(OfferEntity);

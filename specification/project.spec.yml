@@ -1,0 +1,373 @@
+openapi: 3.1.0
+info:
+  title: API сервер для демо-проекта «Шесть городов».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Шесть городов».
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+tags:
+  - name: offers
+    description: Действия с объявлениями.
+  - name: comments
+    description: Действия с комментариями.
+  - name: users
+    description: Действия с пользователем.
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя.
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+        "409":
+          description: Пользователь с таким email уже существует.
+
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля
+
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизованному пользователю
+
+  /users/{userId}/avatar:
+    post:
+      tags:
+        - users
+      summary: Загрузить изображение аватара
+      description: Загружает изображение аватара пользователя. Изображение
+        аватара должно быть в формате `png` или `jpg`.
+
+  /offers:
+    get:
+      tags:
+        - offers
+      summary: Получить список объявлений
+      description: Отдает список объявлений
+
+      responses:
+          "200":
+            description: Список объявлений получен
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/allOffers'
+
+    post:
+      tags:
+        - offers
+      summary: Создать новое объявление
+      description: Создает новое объявление
+
+      requestBody:
+        description: Информация об объявлении.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createSingleOffer'
+        required: true
+
+      responses:
+        "201":
+          description: Объявление успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/singleOffer'
+        "400":
+          description: В объявлении допущены ошибки
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Неккоректный заголовок
+
+  /offers/:offerId:
+    get:
+      tags:
+        - offers
+      summary: Получить объявление
+      description: Отдает подробную информацию об объявлении
+
+      responses:
+        "200":
+          description: Подробная информация об объявлении получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/singleOffer'
+        "404":
+          description: Объявление не найдено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    example: 404
+                  message:
+                    example: Объявление не найдено
+
+  /offers/:offerId/comments:
+    get:
+      tags:
+        - comments
+      summary: Получить комментарии по конкретному оферу
+      description: Отдает комментарии к оферу
+      responses:
+        "200":
+          description: Подробная информация об объявлении получена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/allComments'
+    post:
+      tags:
+        - comments
+      summary: Запостить новый комментарий
+      description: Создает новый комментарий
+      requestBody:
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createComment'
+      responses:
+        "201":
+          description: Комментарий создан
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commentCreated'
+
+components:
+  schemas:
+    createUser:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: keks@htmlacademy.ru
+
+        firstname:
+          type: string
+          example: Keks
+
+        lastname:
+          type: string
+          example: Cat
+
+        password:
+          type: string
+          example: 123456
+
+    user:
+      type: object
+
+      properties:
+        id:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+        email:
+          type: string
+          example: keks@htmlacademy.ru
+
+    allOffers:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: 9c3d6a04ab109c3d6a04ab10
+          title:
+            type: string
+            example: Wood and stone place
+          preview:
+            type: string
+            example: photos.example.com/wood-n-stone.jpg
+          rate:
+            type: integer
+            example: 4
+          rent:
+            type: integer
+            example: 132
+          type:
+            type: string
+            example: apartment
+
+    singleOffer:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 9c3d6a04ab109c3d6a04ab10
+        title:
+          type: string
+          example: Wood and stone place
+        photos:
+          type: string
+          example: [
+            'photos.example.com/wood-n-stone-1.jpg',
+            'photos.example.com/wood-n-stone-2.jpg',
+            'photos.example.com/wood-n-stone-3.jpg'
+          ]
+        rate:
+          type: integer
+          example: 4
+        rent:
+          type: integer
+          example: 132
+        type:
+          type: string
+          example: apartment
+        isPremium:
+          type: boolean
+          example: true
+        isFavourite:
+          type: boolean
+          example: false
+        roomsNum:
+          type: number
+          example: 4
+        personNum:
+          type: number
+          example: 8
+        facilities:
+          type: string
+          example: [
+            'air-conditioning'
+          ]
+        description:
+          type: string
+          example: 'A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.\nAn independent House, strategically located between Rembrand Square and National Opera, but where the bustle of the city comes to rest in this alley flowery and colorful.'
+
+    createSingleOffer:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Wood and stone place
+        photos:
+          type: string
+          example: [
+            'photos.example.com/wood-n-stone-1.jpg',
+            'photos.example.com/wood-n-stone-2.jpg',
+            'photos.example.com/wood-n-stone-3.jpg'
+          ]
+        rate:
+          type: integer
+          example: 4
+        rent:
+          type: integer
+          example: 132
+        type:
+          type: string
+          example: apartment
+        isPremium:
+          type: boolean
+          example: true
+        isFavourite:
+          type: boolean
+          example: false
+        roomsNum:
+          type: number
+          example: 4
+        personNum:
+          type: number
+          example: 8
+        facilities:
+          type: string
+          example: [
+            'air-conditioning'
+          ]
+        description:
+          type: string
+          example: 'A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.\nAn independent House, strategically located between Rembrand Square and National Opera, but where the bustle of the city comes to rest in this alley flowery and colorful.'
+
+    allComments:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            example: 'tr43242efasfet'
+          text:
+            type: string
+            example: 'A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.'
+          authorId:
+            type: string
+            example: 'fdsaffafafddsafsad'
+          rating:
+            type: number
+            example: 4
+          datetime:
+            type: string
+            example: '2025-04-24T18:15:56.083Z'
+
+    createComment:
+      type: object
+      properties:
+        text:
+          type: string
+          example: 'A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.'
+        authorId:
+          type: string
+          example: 'fdsaffafafddsafsad'
+        rating:
+          type: number
+          example: 4
+        datetime:
+          type: string
+          example: '2025-04-24T18:15:56.083Z'
+
+    commentCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'tr43242efasfet'
+        text:
+          type: string
+          example: 'A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam. The building is green and from 18th century.'
+        authorId:
+          type: string
+          example: 'fdsaffafafddsafsad'
+        rating:
+          type: number
+          example: 4
+        datetime:
+          type: string
+          example: '2025-04-24T18:15:56.083Z'

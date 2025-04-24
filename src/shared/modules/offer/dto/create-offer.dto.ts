@@ -1,7 +1,6 @@
 import { Coords } from '../../../types/coords.type.js';
 import { FacilitiesType } from '../../../types/facilities-type.enum.js';
 import { OfferType } from '../../../types/offer-type.enum.js';
-import { User } from '../../../types/user.type.js';
 
 export class CreateOfferDto {
   public title: string;
@@ -18,7 +17,7 @@ export class CreateOfferDto {
   public personNum: number;
   public rent: number;
   public facilities: FacilitiesType[];
-  public author: User;
+  public authorId: string;
   public commentsNum: number;
   public coords: Coords;
 }
