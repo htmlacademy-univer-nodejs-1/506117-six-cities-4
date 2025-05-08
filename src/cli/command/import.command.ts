@@ -7,6 +7,7 @@ import { ConsoleLogger, Logger } from '../../shared/libs/logger/index.js';
 import { DatabaseClient } from '../../shared/database-client/database-client.interface.js';
 import { MongoDatabaseClient } from '../../shared/database-client/mongo.database-client.js';
 import { Offer } from '../../shared/types/index.js';
+import { DEFAULT_USER_PASSWORD } from './command.constant.js';
 
 export class ImportCommand implements Command {
   private readonly logger: Logger;
@@ -32,17 +33,7 @@ export class ImportCommand implements Command {
   private onLineRead(line: string) {
     const offer = createOffer(line);
     this.logger.info(`posting offer ${offer.title}`);
-
-    this.userService.create(
-      {
-        ...offer.author,
-        password: 'passwd1',
-      },
-      this.salt
-    );
-
-    this.offerService.create(offer, this.salt);
-
+    this.saveOffer(offer);
     this.logger.info(`post offer ${offer.title} success`);
   }
 
@@ -53,11 +44,30 @@ export class ImportCommand implements Command {
   private async saveOffer(offer: Offer) {
     const user = await this.userService.findOrCreate({
       ...offer.author,
-      password: 'passwd1'
+      password: DEFAULT_USER_PASSWORD
     }, this.salt);
 
     await this.offerService.create({
-      
+      title: offer.title,
+      description: offer.description,
+      date: offer.date.toISOString(),
+      city: offer.city,
+      preview: offer.preview,
+      photos: offer.photos,
+      isPremium: false,
+      isFavourite: false,
+      rate: offer.rate,
+      type: offer.type,
+      roomsNum: offer.roomsNum,
+      personNum: offer.personNum,
+      rent: offer.rent,
+      facilities: offer.facilities,
+      authorId: user.id,
+      commentsNum: offer.commentsNum,
+      coords: {
+        latitude: offer.coords.latitude,
+        longitude: offer.coords.longitude
+      }
     });
   }
 

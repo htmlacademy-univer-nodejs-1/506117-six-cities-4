@@ -130,12 +130,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  code:
-                    example: 404
-                  message:
-                    example: Объявление не найдено
+                $ref: '#/components/schemas/offerNotFound'
 
   /offers/:offerId/comments:
     get:
@@ -150,6 +145,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/allComments'
+        "404":
+          description: Объявление не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerNotFound'
+
     post:
       tags:
         - comments
@@ -168,6 +170,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/commentCreated'
+        "404":
+          description: Объявление не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerNotFound'
 
 components:
   schemas:
@@ -371,3 +379,11 @@ components:
         datetime:
           type: string
           example: '2025-04-24T18:15:56.083Z'
+
+    offerNotFound:
+      type: object
+      properties:
+        code:
+          example: 404
+        message:
+          example: Объявление не найдено
