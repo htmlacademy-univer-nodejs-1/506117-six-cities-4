@@ -5,7 +5,7 @@ import { OfferType } from '../../../types/offer-type.enum.js';
 export class CreateOfferDto {
   public title: string;
   public description: string;
-  public date: Date;
+  public date: string;
   public city: string;
   public preview: string;
   public photos: string[];
