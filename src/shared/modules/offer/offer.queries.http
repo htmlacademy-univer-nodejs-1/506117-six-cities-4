@@ -1,0 +1,67 @@
+### Get offers preview
+GET http://localhost:3000/offers HTTP/1.1
+Content-Type: application/json
+
+### Get single offer full data
+GET http://localhost:3000/offers/68219a44f6dfc46336a5eabb HTTP/1.1
+Content-Type: application/json
+
+### Post new offer
+POST http://localhost:3000/offers HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "The Pocket Residence of great views.",
+  "description": "An affordable and stylish short-term rental with everything you need for a comfortable city stay.",
+  "date": "2025-06-21T08:45:00.000Z",
+  "city": "Paris",
+  "preview": "photo6.jpg",
+  "photos": [
+    "photo8.jpg",
+    "photo9.jpg",
+    "photo10.jpg",
+    "photo11.jpg"
+  ],
+  "isPremium": false,
+  "isFavourite": false,
+  "rate": 4,
+  "type": "room",
+  "roomsNum": 2,
+  "personNum": 3,
+  "rent": 94867,
+  "facilities": [
+    "breakfast",
+    "air conditioning"
+  ],
+  "commentsNum": 54,
+  "coords": {
+    "latitude": 35.6762,
+    "longitude": 139.6503
+  },
+  "authorId": "68219a43f6dfc46336a5e9f5"
+}
+
+### Update new offer
+PATCH  http://localhost:3000/offers/68219a44f6dfc46336a5eab9 HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "The Awesome Residence of awesome views.",
+  "description": "Cool place Awesome!Awesome!Awesome!Awesome! Awesome!Awesome!Awesome!Awesome!"
+}
+
+### Post favourite
+POST http://localhost:3000/offers/favourites/68219a44f6dfc46336a5eabb HTTP/1.1
+Content-Type: application/json
+
+### Delete favourite
+DELETE  http://localhost:3000/offers/favourites/68219a44f6dfc46336a5eabb HTTP/1.1
+Content-Type: application/json
+
+### Delete offer
+DELETE http://localhost:3000/offers/68219a44f6dfc46336a5eab9 HTTP/1.1
+Content-Type: application/json
+
+### Get premium offers
+GET http://localhost:3000/offers/premium?city=London HTTP/1.1
+Content-Type: application/json

@@ -3,5 +3,5 @@
     "src"
   ],
   "ext": "ts, json",
-  "exec": "node --loader ts-node/esm ./src/main.rest.ts | pino-pretty --colorize --translateTime SYS:standard"
+  "exec": "node --loader ts-node/esm --unhandled-rejections=strict ./src/main.rest.ts | pino-pretty --colorize --translateTime SYS:standard"
 }

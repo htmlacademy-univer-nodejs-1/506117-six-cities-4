@@ -3,8 +3,8 @@ import { UserType } from '../../../types/user-type.enum.js';
 import { UserValidationMessage } from './user.message.js';
 
 export class CreateUserDto {
-  @MinLength(10, { message: UserValidationMessage.name.minLength })
-  @MaxLength(100, { message: UserValidationMessage.name.maxLength })
+  @MinLength(1, { message: UserValidationMessage.name.minLength })
+  @MaxLength(15, { message: UserValidationMessage.name.maxLength })
   public name: string;
 
   @IsEmail({}, { message: UserValidationMessage.email.invalidFormat })
@@ -12,10 +12,10 @@ export class CreateUserDto {
 
   public avatar: string;
 
-  @MinLength(10, { message: UserValidationMessage.password.minLength })
-  @MaxLength(100, { message: UserValidationMessage.password.maxLength })
+  @MinLength(6, { message: UserValidationMessage.password.minLength })
+  @MaxLength(12, { message: UserValidationMessage.password.maxLength })
   public password: string;
 
-  @IsEnum({ message: UserValidationMessage.type.invalidFormat })
+  @IsEnum(UserType, { message: UserValidationMessage.type.invalidFormat })
   public type: UserType;
 }

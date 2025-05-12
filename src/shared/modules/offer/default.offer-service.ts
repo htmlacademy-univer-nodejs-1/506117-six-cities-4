@@ -47,19 +47,29 @@ export class DefaultOfferService implements OfferService {
     id: string,
     newRate: number
   ): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel
-      .findByIdAndUpdate(id, {
-        $set: {
-          commentsNum: { $add: ['$commentsNum', 1] },
-          rate: {
-            $divide: [
-              { $add: [{ $multiply: ['$rate', '$commentsNum'] }, newRate] },
-              { $add: ['$commentsNum', 1] },
-            ],
+    await this.offerModel.updateOne(
+      { _id: id },
+      [
+        {
+          $set: {
+            commentsNum: { $add: ['$commentsNum', 1] },
+            rate: {
+              $divide: [
+                {
+                  $add: [
+                    { $multiply: ['$rate', '$commentsNum'] },
+                    newRate,
+                  ],
+                },
+                { $add: ['$commentsNum', 1] },
+              ],
+            },
           },
         },
-      })
-      .exec();
+      ]
+    ).exec();
+
+    return this.offerModel.findById(id).exec();
   }
 
   public async findNew(count: number): Promise<DocumentType<OfferEntity>[]> {
@@ -138,7 +148,7 @@ export class DefaultOfferService implements OfferService {
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
-      .findByIdAndUpdate(offerId, { isFavorite: true }, { new: true })
+      .findByIdAndUpdate(offerId, { isFavourite: true }, { new: true })
       .populate('authorId')
       .exec();
   }
@@ -147,7 +157,7 @@ export class DefaultOfferService implements OfferService {
     offerId: string
   ): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
-      .findByIdAndUpdate(offerId, { isFavorite: false }, { new: true })
+      .findByIdAndUpdate(offerId, { isFavourite: false }, { new: true })
       .populate('authorId')
       .exec();
   }
