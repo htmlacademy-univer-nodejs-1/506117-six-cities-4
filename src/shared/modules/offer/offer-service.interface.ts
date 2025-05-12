@@ -7,6 +7,7 @@ export interface OfferService {
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
   find(): Promise<DocumentType<OfferEntity>[]>;
   findById(id: string): Promise<DocumentType<OfferEntity> | null>;
+  findByTitle(title: string): Promise<DocumentType<OfferEntity> | null>;
   findOrCreate(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
   deleteById(id: string): Promise<DocumentType<OfferEntity> | null>;
   updateById(id: string, dto: UpdateOfferDto): Promise<DocumentType<OfferEntity> | null>;
@@ -14,4 +15,8 @@ export interface OfferService {
   findNew(count: number): Promise<DocumentType<OfferEntity>[]>;
   findDiscussed(count: number): Promise<DocumentType<OfferEntity>[]>;
   exists(docId: string): Promise<boolean>;
+  findFavorites(): Promise<DocumentType<OfferEntity>[] | null>;
+  findPremiumsByCity(city: string): Promise<DocumentType<OfferEntity>[] | null>;
+  addFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null>;
+  removeFavorite(offerId: string): Promise<DocumentType<OfferEntity> | null>
 }
