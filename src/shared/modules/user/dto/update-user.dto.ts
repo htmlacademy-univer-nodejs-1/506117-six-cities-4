@@ -1,5 +1,10 @@
+import { MinLength, MaxLength } from 'class-validator';
+import { UserValidationMessage } from './user.message.js';
+
 export class UpdateUserDto {
-  public avatarPath?: string;
-  public firstname?: string;
-  public lastname?: string;
+  @MinLength(10, { message: UserValidationMessage.name.minLength })
+  @MaxLength(100, { message: UserValidationMessage.name.maxLength })
+  public name: string;
+
+  public avatar: string;
 }
