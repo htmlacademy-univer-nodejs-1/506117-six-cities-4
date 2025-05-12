@@ -1,0 +1,10 @@
+### Post comment
+POST http://localhost:3000/comments/68219a44f6dfc46336a5eabb HTTP/1.1
+Content-Type: application/json
+
+{
+  "offerId": "68219a44f6dfc46336a5eabb",
+  "text": "Cool place, love It!",
+  "rate": 4,
+  "userId": "68219a43f6dfc46336a5e9f5"
+}

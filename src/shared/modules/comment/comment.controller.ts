@@ -22,7 +22,7 @@ export default class CommentController extends BaseController {
 
     this.logger.info('Register routes for CommentController...');
     this.addRoute({
-      path: '/:offerId/comments',
+      path: '/:offerId',
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [

@@ -1,5 +1,11 @@
 import { inject, injectable } from 'inversify';
-import { BaseController, DocumentExistsMiddleware, HttpError, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import {
+  BaseController,
+  HttpError,
+  HttpMethod,
+  ValidateDtoMiddleware,
+  ValidateObjectIdMiddleware,
+} from '../../libs/rest/index.js';
 import { Component } from '../../types/component.enum.js';
 import { Logger } from '../../libs/logger/logger.interface.js';
 import { Request, Response } from 'express';
@@ -25,19 +31,41 @@ export class OfferController extends BaseController {
     this.addRoute({
       path: '/',
       method: HttpMethod.Get,
-      handler: this.getAll
+      handler: this.getAll,
     });
     this.addRoute({
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)]
+      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)],
+    });
+    this.addRoute({
+      path: '/premium',
+      method: HttpMethod.Get,
+      handler: this.getPremiums,
+    });
+    this.addRoute({
+      path: '/favourites',
+      method: HttpMethod.Get,
+      handler: this.getFavorites,
+    });
+    this.addRoute({
+      path: '/favourites/:offerId',
+      method: HttpMethod.Post,
+      handler: this.addFavorite,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
+    });
+    this.addRoute({
+      path: '/favourites/:offerId',
+      method: HttpMethod.Delete,
+      handler: this.removeFavorite,
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Get,
       handler: this.getSingle,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
     this.addRoute({
       path: '/:offerId',
@@ -45,36 +73,14 @@ export class OfferController extends BaseController {
       handler: this.update,
       middlewares: [
         new ValidateObjectIdMiddleware('offerId'),
-        new ValidateDtoMiddleware(UpdateOfferDto)
-      ]
+        new ValidateDtoMiddleware(UpdateOfferDto),
+      ],
     });
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Delete,
       handler: this.delete,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')]
-    });
-    this.addRoute({
-      path: '/premiums',
-      method: HttpMethod.Get,
-      handler: this.getPremiums
-    });
-    this.addRoute({
-      path: '/favourites',
-      method: HttpMethod.Get,
-      handler: this.getFavorites
-    });
-    this.addRoute({
-      path: '/favourites/:offerId',
-      method: HttpMethod.Post,
-      handler: this.addFavorite,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')]
-    });
-    this.addRoute({
-      path: '/favourites/:offerId',
-      method: HttpMethod.Delete,
-      handler: this.removeFavorite,
-      middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      middlewares: [new ValidateObjectIdMiddleware('offerId')],
     });
   }
 
@@ -108,9 +114,15 @@ export class OfferController extends BaseController {
     this.created(res, fillDTO(SingleOfferRdo, result));
   }
 
-  public async update({ body, params }: UpdateOfferRequest, res: Response): Promise<void> {
+  public async update(
+    { body, params }: UpdateOfferRequest,
+    res: Response
+  ): Promise<void> {
     const { offerId } = params;
-    const updatedOffer = await this.offerService.updateById(offerId as string, body);
+    const updatedOffer = await this.offerService.updateById(
+      offerId as string,
+      body
+    );
     this.ok(res, fillDTO(SingleOfferRdo, updatedOffer));
   }
 
@@ -127,16 +139,17 @@ export class OfferController extends BaseController {
 
   public async getPremiums({ query }: Request, res: Response): Promise<void> {
     const { city } = query;
-    if (city) {
-      const offers = await this.offerService.findPremiumsByCity(city as string);
-      this.ok(res, fillDTO(PreviewOfferRdo, offers));
-    } else {
+
+    if (!city) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
-        'Bad request',
+        'City is required',
         'OfferController'
       );
     }
+
+    const offers = await this.offerService.findPremiumsByCity(city.toString());
+    this.ok(res, fillDTO(PreviewOfferRdo, offers));
   }
 
   public async addFavorite({ params }: Request, res: Response): Promise<void> {

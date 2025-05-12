@@ -10,5 +10,5 @@ import { Controller } from '../../libs/rest/index.js';
 export function createCommentContainer(appContainer: Container) {
   appContainer.bind<CommentService>(Component.CommentService).to(DefaultCommentService).inSingletonScope();
   appContainer.bind<types.ModelType<CommentEntity>>(Component.CommentModel).toConstantValue(CommentModel);
-  appContainer.bind<Controller>(Component.OfferController).to(CommentController).inSingletonScope();
+  appContainer.bind<Controller>(Component.CommentController).to(CommentController).inSingletonScope();
 }

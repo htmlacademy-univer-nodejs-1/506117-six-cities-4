@@ -1,0 +1,43 @@
+### Ordinal request
+POST http://localhost:3000/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "torans@overlook.net",
+  "avatar": "torrance.png",
+  "name": "Jack Torrance",
+  "password": "shining",
+  "type": "Professional"
+}
+
+### Request with fill mistakes
+POST http://localhost:3000/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "@overlook.net",
+  "avatar": "torrance.png",
+  "name": "Ja",
+  "password": "s",
+  "type": ""
+}
+
+### Login request
+POST http://localhost:3000/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "torans@overlook.net",
+  "password": "shining"
+}
+
+### Upload avatar
+POST http://localhost:3000/users/68219a43f6dfc46336a5e9f7/avatar
+Content-Type: multipart/form-data; boundary=BOUNDARY
+
+--BOUNDARY
+Content-Disposition: form-data; name="avatar"; filename="avatar.png"
+Content-Type: image/png
+
+< ./avatar.png
+--BOUNDARY--
