@@ -56,7 +56,14 @@ paths:
       summary: Проверка состояния пользователя
       description: Возвращает информацию по авторизованному пользователю
 
-  /users/{userId}/avatar:
+  /users/:userId/avatar:
+    parameters:
+      - in: path
+        name: userId
+        schema:
+          type: string
+        required: true
+        description: ID пользователя
     post:
       tags:
         - users
@@ -112,6 +119,13 @@ paths:
                     example: Неккоректный заголовок
 
   /offers/:offerId:
+    parameters:
+      - in: path
+        name: offerId
+        schema:
+          type: string
+        required: true
+        description: ID нужного объявления
     get:
       tags:
         - offers
@@ -133,6 +147,13 @@ paths:
                 $ref: '#/components/schemas/offerNotFound'
 
   /offers/:offerId/comments:
+    parameters:
+      - in: path
+        name: offerId
+        schema:
+          type: string
+        required: true
+        description: ID нужного объявления
     get:
       tags:
         - comments
@@ -176,6 +197,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/offerNotFound'
+
+  /offers/favourites:
+    get:
+      tags:
+        - offers
+      summary: Получить список избранных предложений
+      description: Возвращает список избранных предложений
+
+      responses:
+        "200":
+          description: Данные успешно получены
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/allOffers'
+  /offers/premiums:
+    get:
+      tags:
+        - offers
+      summary: Получить список премиальных предложений
+      description: Возвращает список премиальных предложений
+
+      responses:
+        "200":
+          description: Данные успешно получены
+
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/allOffers'
 
 components:
   schemas:

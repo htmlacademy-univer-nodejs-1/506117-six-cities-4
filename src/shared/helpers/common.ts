@@ -1,3 +1,5 @@
+import { ClassConstructor, plainToInstance } from 'class-transformer';
+
 export function getRandomValue(lowBorder: number, highBorder: number, precision = 0): number {
   return +(Math.random() * (highBorder - lowBorder) + lowBorder).toFixed(precision);
 }
@@ -23,4 +25,14 @@ export function capitalize(str: string): string {
   }
 
   return str.slice(0, 1).toUpperCase() + str.slice(1);
+}
+
+export function fillDTO<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
+  return plainToInstance(someDto, plainObject, { excludeExtraneousValues: true });
+}
+
+export function createErrorObject(message: string) {
+  return {
+    error: message,
+  };
 }

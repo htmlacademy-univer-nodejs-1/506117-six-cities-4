@@ -63,7 +63,6 @@ export class ImportCommand implements Command {
       rent: offer.rent,
       facilities: offer.facilities,
       authorId: user.id,
-      commentsNum: offer.commentsNum,
       coords: {
         latitude: offer.coords.latitude,
         longitude: offer.coords.longitude
